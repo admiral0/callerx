@@ -1,0 +1,43 @@
+#!/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+NAME=callerx
+DESC="Callerx Daemon"
+INITFILE=/etc/init.d/$NAME
+
+# abort if simple command fails
+set -e
+
+
+case "$1" in
+  start)
+	echo "Starting: $DESC"
+	callerxd &
+    	;;
+
+  stop)
+	echo "Stopping: $DESC"
+	dbus-send --system --type=method_call --dest=org.callerx. /org/callerx org.callerx.Stop
+    	;;
+
+  restart)
+	echo "Restarting: $DESC"
+	dbus-send --system --type=method_call --dest=org.callerx /org/callerx org.callerx.Reload
+    	;;
+
+  loadblacklist)
+	echo "$DESC: Loading blacklist.."
+	dbus-send --system --type=method_call --dest=org.callerx /org/callerx org.callerx.SetWhitelistMode bool:false
+    	;;
+
+  loadwhitelist)
+	echo "$DESC: Loading whitelist.."
+	dbus-send --system --type=method_call --dest=org.callerx /org/callerx org.callerx.SetWhitelistMode bool:true
+	;;
+
+  *)
+	echo "Usage: $INITFILE {start|stop|restart|loadwhitelist|loadblacklist}"
+    	exit 1
+	;;
+esac
+
+exit 0

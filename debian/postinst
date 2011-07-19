@@ -1,0 +1,3 @@
+#!/bin/sh
+
+run-standalone.sh /etc/init.d/callerx start

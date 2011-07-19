@@ -1,0 +1,66 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<node>
+  <interface name="com.nokia.csd.Call.Instance">
+    <method name="Answer"/>
+    <method name="Release"/>
+    <method name="Split"/>
+    <method name="Hold"/>
+    <method name="Unhold"/>
+    <method name="List">
+      <arg direction="out" type="a(ou)"/>
+      <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="CallInstanceList"/>
+    </method>
+    <method name="SetMute">
+      <arg direction="in" type="b"/>
+      <arg direction="in" type="b"/>
+    </method>
+    <method name="GetMute">
+      <arg direction="out" type="b"/>
+      <arg direction="out" type="b"/>
+    </method>
+    <method name="GetStatus">
+      <arg direction="out" type="u"/>
+    </method>
+    <method name="GetRemote">
+      <arg direction="out" type="s"/>
+      <arg direction="out" type="b"/>
+      <arg direction="out" type="b"/>
+    </method>
+    <signal name="CallStatus">
+      <arg type="u"/>
+      <arg type="u"/>
+      <arg type="u"/>
+    </signal>
+    <signal name="AudioConnect">
+      <arg type="b"/>
+      <arg type="b"/>
+      <arg type="b"/>
+    </signal>
+    <signal name="CallError">
+      <arg type="u"/>
+    </signal>
+    <signal name="Terminated"/>
+    <signal name="Waiting"/>
+    <signal name="Multiparty"/>
+    <signal name="OnHold">
+      <arg type="b"/>
+    </signal>
+    <signal name="Forwarded"/>
+    <signal name="Emergency">
+      <arg type="s"/>
+    </signal>
+    <signal name="SendingDTMF">
+      <arg type="s"/>
+    </signal>
+    <signal name="DTMFTone">
+      <arg type="y"/>
+    </signal>
+    <signal name="StoppedDTMF"/>
+  </interface>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg direction="out" type="s"/>
+    </method>
+  </interface>
+</node>

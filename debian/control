@@ -1,0 +1,27 @@
+Source: callerx
+Section: user/utilities
+Priority: extra
+Maintainer: Khuong Nguyen<kenixs@gmail.com>
+Build-Depends: debhelper (>= 5), libqt4-dev
+Standards-Version: 3.7.3
+
+Package: callerx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A simple calls blocker app for N900
+ Blocking calls based on a simple whitelist.txt or blacklist.txt file in MyDocs folder,
+ this app is auto-start upon boot, and auto-detect and reload if any changes made to
+ to the list, allow range block by entering first partial block of phone number in list
+ Lists format are using each phone number per line without
+ any other characters or spaces (just digits with no spaces in between or in front)
+ To block unknown caller just enter "unknown" without quote
+ To switch to whitelist mode which allow block all callers except those listed in whitelist.txt,
+ use command "/etc/init.d/callerx loadwhitelist",
+ Usage command
+ "/etc/init.d/callerx loadwhitelist"
+ "/etc/init.d/callerx loadblacklist"
+ "/etc/init.d/callerx start"
+ "/etc/init.d/callerx stop".
+XB-Maemo-Display-Name: callerx
+XSBC-Bugtracker: http://talk.maemo.org/showthread.php?p=1052812#post1052812
+XB-Maemo-Icon-26: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOwgAADsIBFShKgAAABJFJREFUaIHtmG1MW1UYx/+3vZTBeBksGyPGzDiNJhOdYDbMMgeWD0Yd7It0MrMhkNEAy5Jl8SWZMs38BsaZGUoBoZvbsmXC3hIJM4NEncuIMQQVtkhoRF5a2lLu7dtt7z3HD05SoIXeQmlM7i85X87z9n/uuec+TQEFBQUFBQWF+MHEo+gn9/b0gmIHAFAwHQyj6qvP77u+VAyllGEYhi7cX7MGPv7xlV4GTIFX5MH5p+fZWJUGyWw6NOokM6DZf3pP70CkedekgZN9BcckCF/wfjv8xBfWb+O6x8CqEsFQlH+6t88USW521VSG4P3bRenqBLEDDPbb3ZOgIEv62zzjSEvchCQ2tQNAfBv44HbBYRHuDjtvhUTFR7tLHzgRKR4OjcM7QwAgBYBruToxaeC97wvqKZhTdrcFhBJE+qZO/uaDzyUJI3dcfQCkSGJWtQGDwfCyRqO5a3Z3w6oahiT9+8oQicIx6kdiqgrb12uxxfciBjJMENTOuVjeEgA/JdoGO523XFNSDwBvJDVX5RI3NTUdSkxMNL1bUTG3d/PGDZim6+AYEeBxiLbXsupmcnNzny4uKZnzaW1pwcXRkwj4iPDgO75nesh3AsAIInz6q0ZbWxulwKL1YUMdfa50wzCAz0LZKUDfOrHXrlnPNAMoWa5OzAgnjgK0s7OTtre3h7XrdLpuADsBJMVFfN017a+Hz++kX7Y0hBUZbjU2Ng6vtP6KLnHtt9p2QugOjthxj70IlfEMao8cWzbuWlcXrFbrpRSgaiX1gRU0UHO1qJ5SptzhsYBKDDzgcJP7HLURxFqt1s7q6uqyaGsHo4omqOZq4Vbe5z71l8MMl9cLH08w/osHoz/wD65cvhxJisZo6oYiqgYCfrbD7raBUIBQwP6nDx5HYKI0p0Yo1emWjU9JSek1GAxHoqm9ENkNlJu0xymYAkoY/LeIS+1684mK2by8vOcjyVF28KAmKyur2Wg0HpIveT6yBtk7rUUXVAmkbJL7e97+0a0N2FdcHDLmnMkESZIQPOSCaTYY6vR6/VdydAQj6wTUCeoyp2cWhDDzltcbeuq3GI1TmZmZhQzDFEYrcDlknUBZm5ZOLXj6AKBl38a2Tc9Cd+DAwuRz+VtbWycqq6qyg+1ft7WhsrJyRT9n5ARv3nc23zLrdYZ12J3wOnI2vwSO4+7o9XptKJ/m5uY/KKXbABzV6/VGmXoXIWcOqMmjSxuO7tEuDPePnO66cP2jcD4qlaqQELKturr6rhyh4ZBzAtlvnNk94fQ4QhoFZwDuSQFD58Z2Abi/GuIiQc4J8MlsOpyEh0jEeQbO7IbPLtjGeqxnsYbiAXlfIZeX8/Op6zIQPAMoYeB3iYK1f/aW6CFXYqY0DLI+o5ah6cHkhBSowIIQgBBA4AJw/M7/7B73ngfwMEY6w6KW4zwxYLkveAOPP/nCU8/MuGbBmT1wjflslp9sRQAGASz64ynWyGoAgHPG7OTTtqRtV7NsFmflBFu/o1N0id/ERF2M2AjgeL5+13hGzoZeAK/GW1C0ZAPQxFuEgoKCgoLC/5p/ANQ6LZiJuMkYAAAAAElFTkSuQmCC

@@ -1,0 +1,13 @@
+callerx (0.80) unstable; urgency=low
+
+  * Refactored a lot of code
+  * Migrated to cmake
+  * config is in /home/user/.callerxrc
+
+ -- Radu Andries <admiral0@tuxfamily.org>  Tue, 19 Jul 2011 16:53:52 +0200
+
+callerx (0.0.8) unstable; urgency=low
+
+  * Fix recent tested package install script issue
+
+ -- Khuong Nguyen <kenixs@gmail.com>  Sat, 16 Jul 2011 13:22:37 -0500
