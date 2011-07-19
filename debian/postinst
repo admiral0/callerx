@@ -1,3 +1,4 @@
 #!/bin/sh
 
-run-standalone.sh /etc/init.d/callerx start
+update-rc.d callerx defaults s99 k10
+/etc/init.d/callerx start
