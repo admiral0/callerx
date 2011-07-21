@@ -20,7 +20,6 @@
 #define INSTANCE_INTERFACE "com.nokia.csd.Call.Instance"
 
 #define CONFIG_PATH "/home/user/.callerxrc"
-#define DEFAULT_WHITELIST "/home/user/MyDocs/whitelist.txt"
 #define DEFAULT_BLACKLIST "/home/user/MyDocs/blacklist.txt"
 
 
@@ -28,13 +27,13 @@ class CallerxAdaptor;
 class CallerXDaemon : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.callerx.ifdbus")
+    Q_CLASSINFO("D-Bus Interface", "org.callerx")
 
 public:
 
     explicit CallerXDaemon(QObject *parent = 0);
     ~CallerXDaemon();
-
+    bool isBlocked(QString number);
     void Start();
 
 
@@ -44,22 +43,18 @@ signals:
 public slots:
     void Reload();
     void Stop();
-    void SetWhitelistMode(bool enabled);
 
 private slots:
     void callScreen(const QDBusObjectPath& call, const QString& number);
-    void callRelease();
-    void loadlist();
-    void syncSettings();
 
 private:
-    QFileSystemWatcher* fileWatcher;
-    QStringList nlist;
-    QString dbusPath, listPath, whitelistpath, blacklistpath;
-    bool whitelistmode;
-    QSettings *settings;
+    void loadBlocklists(QStringList lists);
+    QString phonePrefix;
+    QFileSystemWatcher* configWatcher;
+    QHash<QString,QStringList*> *lists;
+    QHash<QString,QVariantHash*> *listsSettings; //Contains list settings "external","isEnabled","timeStart","timeEnd","days", "isWhitelist"
+    QSettings *globalSettings;
     ComNokiaCsdCallInterface *csd;
-    ComNokiaCsdCallInstanceInterface *csdi;
     CallerxAdaptor *adaptor;
 };
 #endif // MAINWINDOW_H

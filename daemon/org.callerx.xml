@@ -3,8 +3,5 @@
     <interface name="org.callerx">
         <method name="Reload" />
         <method name="Stop" />
-        <method name="SetWhitelistMode">
-            <arg direction="in" type="b" />
-        </method>
     </interface>
 </node>

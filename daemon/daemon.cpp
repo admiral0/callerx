@@ -5,35 +5,23 @@
 CallerXDaemon::CallerXDaemon(QObject *parent) :
     QObject(parent)
 {
-    settings=new QSettings(CONFIG_PATH,QSettings::IniFormat);
-    settings->beginGroup("General");
-    whitelistmode = settings->value("whitelistmode", false).toBool();
-    settings->endGroup();
-    settings->beginGroup("Paths");
-    whitelistpath = settings->value("whitelistpath", DEFAULT_WHITELIST).toString();
-    blacklistpath = settings->value("blacklistpath", DEFAULT_BLACKLIST).toString();
-    settings->endGroup();
-    if (whitelistmode) {
-        listPath = whitelistpath;
-    }
-    else {
-        listPath = blacklistpath;
-    }
-    syncSettings(); //Creates file if it doesn't exist
+    globalSettings=new QSettings(CONFIG_PATH,QSettings::IniFormat);
+    phonePrefix=globalSettings->value("phonePrefix",QString()).toString();
+    Reload();
+    //Start global call listener
     csd=new ComNokiaCsdCallInterface(BUS_NAME,BUS_PATH,QDBusConnection::systemBus());
+    //Initialize dbus adaptor
     new CallerxAdaptor(this);
 }
-
 CallerXDaemon::~CallerXDaemon()
 {
-    syncSettings();
-    delete fileWatcher;
-    delete settings;
+    delete configWatcher;
+    delete globalSettings;
 }
 
 void CallerXDaemon::Start()
 {
-    //New Call
+    //New Call hook
     connect(csd,SIGNAL(Coming(QDBusObjectPath,QString)),this,SLOT(callScreen(QDBusObjectPath,QString)));
     QDBusConnection dbusif=QDBusConnection::systemBus();
     if (!dbusif.isConnected()) {
@@ -49,44 +37,18 @@ void CallerXDaemon::Start()
         return;
     }
 
-    QFile blocklist(listPath);
-    if (!blocklist.exists()) {
-        if (!blocklist.open(QIODevice::WriteOnly | QIODevice::Text)){
-            return;
-        }
-        blocklist.close();
-    }
-
-    fileWatcher = new QFileSystemWatcher();
-    fileWatcher->addPath(listPath);
-    loadlist();
-    connect(fileWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(loadlist()));
+    configWatcher = new QFileSystemWatcher();
+    configWatcher->addPath(CONFIG_PATH);
+    connect(configWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(loadlist()));
     
 }
 
 void CallerXDaemon::callScreen(const QDBusObjectPath &call,const QString &number)
 {
-    dbusPath=call.path();
-    if (whitelistmode) {
-    //Kick'em if not in the list
-        bool match = false;
-        for (int i = 0; i < nlist.size(); ++i){
-            if (number.startsWith(nlist.at(i))){
-                break;
-            }
-        }
-        if(!match){
-            callRelease();
-        }
-    }else{
-        for (int i = 0; i < nlist.size(); ++i){
-            if (number.startsWith(nlist.at(i))){
-                callRelease();
-                break;
-            }
-        }
+    if(isBlocked(number)){
+        ComNokiaCsdCallInstanceInterface call(BUS_NAME,call.path(),QDBusConnection::systemBus());
+        call.Release();
     }
-
 }
 
 void CallerXDaemon::Stop()
@@ -97,64 +59,107 @@ void CallerXDaemon::Stop()
 
 void CallerXDaemon::Reload()
 {
-    loadlist();
+    globalSettings->beginGroup("General");
+    QStringList lists= globalSettings->value("blocklists", QStringList()).toStringList();
+    globalSettings->endGroup();
+    //Hit me plenty...
+    loadBlocklists(lists);
 }
 
-void CallerXDaemon::SetWhitelistMode ( bool enabled )
+void CallerXDaemon::loadBlocklists(QStringList sLists)
 {
-    whitelistmode=enabled;
-    fileWatcher->removePath(listPath);
-    if(enabled){
-        listPath=whitelistpath;
-    }else{
-        listPath=blacklistpath;
-    }
-    fileWatcher->addPath(listPath);
-    Reload();
-}
-
-void CallerXDaemon::callRelease()
-{
-     ComNokiaCsdCallInstanceInterface call(BUS_NAME,dbusPath,QDBusConnection::systemBus());
-     call.Release();
-}
-
-void CallerXDaemon::loadlist()
-{
-    nlist.clear();
-    QFile blocklist(listPath);
-    if (blocklist.exists()) {
-        if (!blocklist.open(QIODevice::ReadOnly | QIODevice::Text)){
-            return;
-        }
-        QTextStream in(&blocklist);
-        QString line = in.readLine();
-        while (!line.isNull()) {
-            if (!nlist.contains(line)) {
-               nlist.append(line);
+    foreach(QString listname,sLists){
+        qDebug()<<"Processing "<<listname;
+        globalSettings->beginGroup(listname);
+        QStringList *l=new QStringList();
+        QVariantHash *settings=new QVariantHash();
+        settings->insert("enabled",globalSettings->value("enabled",true));
+        settings->insert("external",globalSettings->value("external",QString()));
+        settings->insert("isWhitelist",globalSettings->value("isWhitelist",false));
+        settings->insert("timeStart",globalSettings->value("timeStart",QTime(0,0))); //ye' olde tricke
+        settings->insert("timeEnd",globalSettings->value("timeEnd",QTime(0,0))); 
+        settings->insert("days",globalSettings->value("dayStart",QVariantList()));
+        if(settings->value("external").toString().isEmpty()){
+            QStringList storage=globalSettings->value("list",QStringList()).toStringList();
+            //Moving from stack to heap like a boss
+            foreach(QString blocked,storage){
+                l->append(blocked);
             }
-            line = in.readLine();
+        }else{
+            QString lstpath=settings->value("external").toString();
+            QFile blocklist(lstpath);
+            if (blocklist.exists()) {
+                if (!blocklist.open(QIODevice::ReadOnly | QIODevice::Text)){                
+                    QTextStream in(&blocklist);
+                    QString line = in.readLine();
+                    while (!line.isNull()) {
+                        l->append(line);
+                        line = in.readLine();
+                    }
+                    //This could be
+                    //l=blocklist.readAll().split("\n");
+                    //but looses compatibility with winnoob editors
+                    blocklist.close();
+                }
+            }
         }
-        //This could be
-        //nlist=blocklist.readAll().split("\n");
-        //but looses compatibility with winnoob editors
-        blocklist.close();
+        lists->insert(listname,l);
+        
+        globalSettings->endGroup();
     }
 }
-/**
- * Synchronizes settings with rc.
- */
-void CallerXDaemon::syncSettings()
+bool CallerXDaemon::isBlocked(QString number)
 {
-    settings->beginGroup("General");
-    settings->setValue("whitelistmode", whitelistmode);
-    settings->endGroup();
-    settings->beginGroup("Paths");
-    settings->setValue("whitelistpath", whitelistpath);
-    settings->setValue("blacklistpath", blacklistpath);
-    settings->endGroup();
-    settings->sync();
+    QTime currentTime = QTime::currentTime();
+    QTime maxTime(23,59,59);
+    QDate currentDate = QDate::currentDate();
+    bool whitelist,tempresult,inTime;
+    QTime timeStart,timeEnd;
+    QVariantList days;
+    if(number.startsWith(phonePrefix)){
+        number.remove(0,phonePrefix.size());
+    }
+    foreach(QString list,lists->keys()){
+        QStringList *l=lists->value(list);
+        QVariantHash *s=listsSettings->value(list);
+        whitelist=s->value("isWhitelist").toBool();
+        days=s->value("dayStart").toList();
+        timeStart=s->value("timeStart").toTime();
+        timeEnd=s->value("timeEnd").toTime();
+        bool e=s->value("enabled").toBool();
+        inTime=false;
+        if(timeStart==timeEnd)
+            inTime=true;
+        //multidate, too drunk to do seriously
+        if(timeStart<timeEnd){
+            if(currentTime>timeStart || currentTime<timeEnd)
+                inTime=true;
+        }else{
+            if(currentTime>timeStart && currentTime<timeEnd)
+                inTime=true;
+        }
+        //Verify if list is active. This is a monster
+        if(e && days.contains(currentDate.dayOfWeek()) && inTime){
+            if(whitelist){
+                foreach(QString match,*l){
+                    if(number.startsWith(match)){
+                        tempresult=false;
+                    }
+                }
+                if(!tempresult)
+                    tempresult=true;
+            }else{
+                foreach(QString match,*l){
+                    if(number.startsWith(match) && !tempresult){
+                        tempresult=true;
+                    }
+                }
+            }
+        }
+        if(tempresult)
+            return true;
+    }
+    return false;   
 }
-
 
 #include "daemon.moc"
