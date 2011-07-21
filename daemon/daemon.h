@@ -50,6 +50,7 @@ private slots:
     void callScreen(const QDBusObjectPath& call, const QString& number);
     void callRelease();
     void loadlist();
+    void syncSettings();
 
 private:
     QFileSystemWatcher* fileWatcher;

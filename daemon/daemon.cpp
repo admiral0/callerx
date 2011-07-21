@@ -19,21 +19,14 @@ CallerXDaemon::CallerXDaemon(QObject *parent) :
     else {
         listPath = blacklistpath;
     }
+    syncSettings(); //Creates file if it doesn't exist
     csd=new ComNokiaCsdCallInterface(BUS_NAME,BUS_PATH,QDBusConnection::systemBus());
     new CallerxAdaptor(this);
 }
 
 CallerXDaemon::~CallerXDaemon()
 {
-    //Syncing settings before exit...
-    settings->beginGroup("General");
-    settings->setValue("whitelistmode", whitelistmode);
-    settings->endGroup();
-    settings->beginGroup("Paths");
-    settings->setValue("whitelistpath", whitelistpath);
-    settings->setValue("blacklistpath", blacklistpath);
-    settings->endGroup();
-    settings->sync();
+    syncSettings();
     delete fileWatcher;
     delete settings;
 }
@@ -42,9 +35,6 @@ void CallerXDaemon::Start()
 {
     //New Call
     connect(csd,SIGNAL(Coming(QDBusObjectPath,QString)),this,SLOT(callScreen(QDBusObjectPath,QString)));
-    //Why???!
-    //connect(csd,SIGNAL(UserConnection(bool)),this,SLOT(callOn(bool))); 
-    //connect(csdi,SIGNAL(Terminated()),this,SLOT(callOff()));
     QDBusConnection dbusif=QDBusConnection::systemBus();
     if (!dbusif.isConnected()) {
         emit quit();
@@ -151,5 +141,20 @@ void CallerXDaemon::loadlist()
         blocklist.close();
     }
 }
+/**
+ * Synchronizes settings with rc.
+ */
+void CallerXDaemon::syncSettings()
+{
+    settings->beginGroup("General");
+    settings->setValue("whitelistmode", whitelistmode);
+    settings->endGroup();
+    settings->beginGroup("Paths");
+    settings->setValue("whitelistpath", whitelistpath);
+    settings->setValue("blacklistpath", blacklistpath);
+    settings->endGroup();
+    settings->sync();
+}
+
 
 #include "daemon.moc"
