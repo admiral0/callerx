@@ -33,6 +33,7 @@ public:
 private:
     void displayHelp();
     QStringList args;
+    QString command;
 };
 
 #endif // CALLERXCONSOLE_H

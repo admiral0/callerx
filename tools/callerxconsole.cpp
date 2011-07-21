@@ -18,6 +18,7 @@
 
 
 #include "callerxconsole.h"
+#include <cstdlib>
 #include <iostream>
 #include <QtCore/qcoreapplication.h>
 
@@ -25,7 +26,12 @@ using namespace std;
 CallerXConsole::CallerXConsole(QObject* parent): QObject(parent)
 {
  args=QCoreApplication::instance()->arguments();
- displayHelp();
+ if(args.size()<2)
+    displayHelp();
+ command=args.at(1);
+ if(command=="help"){
+    displayHelp();
+ }
 }
 CallerXConsole::~CallerXConsole()
 {
@@ -33,17 +39,59 @@ CallerXConsole::~CallerXConsole()
 }
 void CallerXConsole::displayHelp()
 {
-    cout<< " Usage: "<< args.at(0).toStdString() << " command " << "[command options]" << "\n\n" ;
-    cout<< " " << "Commands:" << "\n";
-    cout<< "  " << "help    " << " " << "Displays this help message." << "\n"; 
-    cout<< "  " << "status  " << " " << "Displays status of daemon" << "\n";
-    cout<< "  " << "reload  " << " " << "Forces daemon to reload settings" << "\n";
-    cout<< "  " << "lists   " << " " << "Displays all lists" << "\n"; 
-    cout<< "  " << "addlist " << " " << "Adds a new blacklist" << "\n";
-    cout<< "  " << "dellist " << " " << "Deletes blacklist" << "\n";
-    cout<< "  " << "param   " << " " << "Displays/Modifies list settings" << "\n";
-    cout<< "  " << "add     " << " " << "Adds a new number to specified blacklist" << "\n"; 
-    cout<< "  " << "del     " << " " << "Deletes number from specified blacklist" << "\n"; 
-    cout<<"\n";
+    if(command=="help" && args.size()>2){
+        QString subcmd=args.at(2);
+        if(subcmd=="help"){
+            if(args.size()>3 && args.at(3)=="help"){
+                if(args.size()>4 && args.at(4)=="help"){
+                    cout<<"gtfo\n";
+                }else{
+                    cout<< "YO DAWG.\n";
+                }
+            }else{
+                cout<< "We need to go deeper.\n";
+            }
+        }else if(subcmd=="status"){
+            cout<< "No options"<< "\n";
+        }else if(subcmd=="reload"){
+            cout<< "No options\n";
+        }else if(subcmd=="lists"){
+            cout<< "No options\n";
+        }else if(subcmd=="addlist"){
+            cout<< "Usage: addlist listname\n";
+        }else if(subcmd=="dellist"){
+            cout<< "Usage: dellist listname\n";
+        }else if(subcmd=="param"){
+            cout<< "Usage: param parameter_name [newvalue]\n\n";
+            cout<< " Params:\n";
+            cout<< "  isEnabled yes|no\n";
+            cout<< "  isWhitelist yes|no\n";
+            cout<< "  blockUnknown yes|no\n";
+            cout<< "  external 0|path_to_list\n";
+            cout<< "  timeStart hh:mm\n";
+            cout<< "  timeEnd hh:mm\n";
+            cout<< "  days 1,5,6 # (Monday,Friday and Saturday)\n";
+            cout<< "\n";
+        }else if(subcmd=="add"){
+            cout<<"Usage: add listname number\n";
+        }else if(subcmd=="del"){
+            cout<<"Usage: del listname number\n";
+        }
+    }else{
+        cout<< " Usage: "<< args.at(0).toStdString() << " command " << "[command options]" << "\n\n" ;
+        cout<< " " << "Commands:" << "\n";
+        cout<< "  " << "help    " << " " << "Displays this help message." << "\n"; 
+        cout<< "  " << "status  " << " " << "Displays status of daemon" << "\n";
+        cout<< "  " << "reload  " << " " << "Forces daemon to reload settings" << "\n";
+        cout<< "  " << "lists   " << " " << "Displays all lists" << "\n"; 
+        cout<< "  " << "addlist " << " " << "Adds a new blacklist" << "\n";
+        cout<< "  " << "dellist " << " " << "Deletes blacklist" << "\n";
+        cout<< "  " << "param   " << " " << "Displays/Modifies list settings" << "\n";
+        cout<< "  " << "add     " << " " << "Adds a new number to specified blacklist" << "\n"; 
+        cout<< "  " << "del     " << " " << "Deletes number from specified blacklist" << "\n"; 
+        cout<<"\n";
+        cout<< " Use \"" << args.at(0).toStdString() << " help command\" to get more help.\n\n";
+    }
+    exit(0); //This is cruel i know
 }
 
