@@ -11,3 +11,4 @@ add_definitions (
 )
 
 add_subdirectory(daemon)
+add_subdirectory(tools)
