@@ -79,6 +79,7 @@ void CallerXDaemon::loadBlocklists(QStringList sLists)
         settings->insert("timeStart",globalSettings->value("timeStart",QTime(0,0))); //ye' olde tricke
         settings->insert("timeEnd",globalSettings->value("timeEnd",QTime(0,0))); 
         settings->insert("days",globalSettings->value("dayStart",QVariantList()));
+        settings->insert("blockUnknown",globalSettings->value("blockUnknown",false));
         if(settings->value("external").toString().isEmpty()){
             QStringList storage=globalSettings->value("list",QStringList()).toStringList();
             //Moving from stack to heap like a boss
@@ -140,6 +141,10 @@ bool CallerXDaemon::isBlocked(QString number)
         }
         //Verify if list is active. This is a monster
         if(e && days.contains(currentDate.dayOfWeek()) && inTime){
+            if(s->value("blockUnknown").toBool() && number.isEmpty())
+                return true;
+            else if(number.isEmpty())
+                return false;
             if(whitelist){
                 foreach(QString match,*l){
                     if(number.startsWith(match)){

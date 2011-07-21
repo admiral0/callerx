@@ -52,7 +52,7 @@ private:
     QString phonePrefix;
     QFileSystemWatcher* configWatcher;
     QHash<QString,QStringList*> *lists;
-    QHash<QString,QVariantHash*> *listsSettings; //Contains list settings "external","isEnabled","timeStart","timeEnd","days", "isWhitelist"
+    QHash<QString,QVariantHash*> *listsSettings; //Contains list settings "external","isEnabled","timeStart","timeEnd","days", "isWhitelist","blockUnknown"
     QSettings *globalSettings;
     ComNokiaCsdCallInterface *csd;
     CallerxAdaptor *adaptor;
