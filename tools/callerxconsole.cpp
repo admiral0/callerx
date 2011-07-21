@@ -18,6 +18,7 @@
 
 
 #include "callerxconsole.h"
+#include "callerx.h"
 #include <cstdlib>
 #include <iostream>
 #include <QtCore/qcoreapplication.h>
@@ -31,11 +32,15 @@ CallerXConsole::CallerXConsole(QObject* parent): QObject(parent)
  command=args.at(1);
  if(command=="help"){
     displayHelp();
+ }else if(command=="status"){
+     displayStatus();
+ }else if(command=="reload"){
+    reload();
  }
 }
 CallerXConsole::~CallerXConsole()
 {
-
+    //NOP
 }
 void CallerXConsole::displayHelp()
 {
@@ -95,3 +100,15 @@ void CallerXConsole::displayHelp()
     exit(0); //This is cruel i know
 }
 
+void CallerXConsole::displayStatus()
+{
+    OrgCallerxInterface iface("org.callerx","/org/callerx",QDBusConnection::systemBus(),this);
+    cout<< "Nothing interesting to show yet.\n";
+}
+
+void CallerXConsole::reload()
+{
+    OrgCallerxInterface iface("org.callerx","/org/callerx",QDBusConnection::systemBus(),this);
+    iface.Reload();
+    cout<< "Command sent.\n";
+}

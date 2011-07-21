@@ -1,5 +1,5 @@
 /*
-    CallerX management from console
+    <one line to give the program's name and a brief idea of what it does.>
     Copyright (C) 2011  Radu Andries <admiral0@tuxfamily.org>
 
     This program is free software: you can redistribute it and/or modify
@@ -17,25 +17,5 @@
 */
 
 
-#ifndef CALLERXCONSOLE_H
-#define CALLERXCONSOLE_H
+#include "daemoninteraction.h"
 
-#include <QtCore/QObject>
-
-#include <QtCore/QStringList>
-
-
-class CallerXConsole : public QObject
-{
-public:
-    explicit CallerXConsole(QObject* parent = 0);
-    virtual ~CallerXConsole();
-private:
-    void displayHelp();
-    void displayStatus();
-    void reload();
-    QStringList args;
-    QString command;
-};
-
-#endif // CALLERXCONSOLE_H
