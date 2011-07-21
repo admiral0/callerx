@@ -1,0 +1,16 @@
+This is only a stub.
+
+
+ Usage: callerxc command [command options]
+
+ Commands:
+  help     Displays this help message.
+  status   Displays status of daemon
+  reload   Forces daemon to reload settings
+  lists    Displays all lists
+  addlist  Adds a new blacklist
+  dellist  Deletes blacklist
+  param    Displays/Modifies list settings
+  add      Adds a new number to specified blacklist
+  del      Deletes number from specified blacklist
+

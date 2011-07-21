@@ -18,14 +18,32 @@
 
 
 #include "callerxconsole.h"
+#include <iostream>
+#include <QtCore/qcoreapplication.h>
 
-
+using namespace std;
 CallerXConsole::CallerXConsole(QObject* parent): QObject(parent)
 {
-
+ args=QCoreApplication::instance()->arguments();
+ displayHelp();
 }
 CallerXConsole::~CallerXConsole()
 {
 
+}
+void CallerXConsole::displayHelp()
+{
+    cout<< " Usage: "<< args.at(0).toStdString() << " command " << "[command options]" << "\n\n" ;
+    cout<< " " << "Commands:" << "\n";
+    cout<< "  " << "help    " << " " << "Displays this help message." << "\n"; 
+    cout<< "  " << "status  " << " " << "Displays status of daemon" << "\n";
+    cout<< "  " << "reload  " << " " << "Forces daemon to reload settings" << "\n";
+    cout<< "  " << "lists   " << " " << "Displays all lists" << "\n"; 
+    cout<< "  " << "addlist " << " " << "Adds a new blacklist" << "\n";
+    cout<< "  " << "dellist " << " " << "Deletes blacklist" << "\n";
+    cout<< "  " << "param   " << " " << "Displays/Modifies list settings" << "\n";
+    cout<< "  " << "add     " << " " << "Adds a new number to specified blacklist" << "\n"; 
+    cout<< "  " << "del     " << " " << "Deletes number from specified blacklist" << "\n"; 
+    cout<<"\n";
 }
 

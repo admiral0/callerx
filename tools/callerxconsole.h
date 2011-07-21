@@ -22,12 +22,17 @@
 
 #include <QtCore/QObject>
 
+#include <QtCore/QStringList>
+
 
 class CallerXConsole : public QObject
 {
 public:
     explicit CallerXConsole(QObject* parent = 0);
     virtual ~CallerXConsole();
+private:
+    void displayHelp();
+    QStringList args;
 };
 
 #endif // CALLERXCONSOLE_H

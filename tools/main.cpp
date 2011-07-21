@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include "dbustypes.h"
 #include "callerxconsole.h"
+#include <QtCore/qcoreapplication.h>
 
 int main(int argc, char *argv[])
 {
@@ -14,5 +15,4 @@ int main(int argc, char *argv[])
     qDBusRegisterMetaType<CallInstanceList>();
     qDBusRegisterMetaType<CallTimers>();
     CallerXConsole c;
-    return a.exec();
 }
