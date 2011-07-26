@@ -1,3 +1,10 @@
+callerx (0.97.0) unstable; urgency=low
+
+  * Added library enabling other apps to integrate
+  * Added callerxc, a CLI configurator
+
+ -- Radu Andries <admiral0@tuxfamily.org>  Tue, 26 Jul 2011 15:11:53 +0200
+
 callerx (0.80.2) unstable; urgency=low
 
   * Nothing important, just refactoring
