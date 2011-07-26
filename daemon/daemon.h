@@ -41,8 +41,20 @@ signals:
     void quit();
 
 public slots:
+    /**
+     * Reload all configuration and blocklists.
+     * @note While ReloadConfiguration is not available avoid calling this funtion because it's expensive.
+     */
     void Reload();
+    /**
+     * Quits daemon nicely.
+     */
     void Stop();
+    /**
+     * This is used to test whether daemon is alive and can respond
+     * @return QString -> "pong"
+     */
+    QString Ping();
 
 private slots:
     void callScreen(const QDBusObjectPath& call, const QString& number);

@@ -1,5 +1,5 @@
 /*
-    Interaction with daemon via DBUS
+    Interaction with config
     Copyright (C) 2011  Radu Andries <admiral0@tuxfamily.org>
 
     This program is free software: you can redistribute it and/or modify
@@ -17,31 +17,31 @@
 */
 
 
-#ifndef DAEMONINTERACTION_H
-#define DAEMONINTERACTION_H
+#ifndef CONFIGINTERACTION_H
+#define CONFIGINTERACTION_H
 
 #include <QtCore/QObject>
-#include "callerx.h"
 
-/**
- * Class that interacts directly with daemon via dbus.
- * @note Note that not all calls are mapped. Only ones required for API
- */
-class DaemonInteraction : public QObject
+class QSettings;
+
+class ConfigInteraction : public QObject
 {
-    explicit DaemonInteraction();
-    virtual ~DaemonInteraction();
+    explicit ConfigInteraction();
+    virtual ~ConfigInteraction();
 public:
-    /**
-     * Pings server
-     */
-    bool isAlive();
-    /**
-     * Forces server to reload all lists and configuration
-     */
-    void ReloadAll();
+    QStringList lists();
+    void addList(QString name);
+    void delList(QString list);
+    QVariant getParam(QString list,QString name);
+    void setParam(QString list,QString name, QVariant value);
+    void addNumber(QString list,QString number);
+    void delNumber(QString list,QString number);
+    QStringList listNumbers(QString list);
+    QVariant getGlobal(QString name);
+    void setGlobal(QString name, QVariant value);
+    
 private:
-    OrgCallerxInterface *callerxd;
+    QSettings *settings;
 };
 
-#endif // DAEMONINTERACTION_H
+#endif // CONFIGINTERACTION_H

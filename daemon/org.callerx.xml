@@ -3,5 +3,8 @@
     <interface name="org.callerx">
         <method name="Reload" />
         <method name="Stop" />
+        <method name="Ping">
+            <arg direction="out" type="s" />
+        </method>
     </interface>
 </node>

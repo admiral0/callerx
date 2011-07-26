@@ -5,7 +5,7 @@ include_directories(
         ${CMAKE_BINARY_DIR}/lib
 )
 
-set(callerxlib_SRCS daemoninteraction.cpp ${CMAKE_SOURCE_DIR}/daemon/dbustypes.cpp)
+set(callerxlib_SRCS configinteraction.cpp daemoninteraction.cpp ${CMAKE_SOURCE_DIR}/daemon/dbustypes.cpp)
 
 set_property(SOURCE ${CMAKE_SOURCE_DIR}/daemon/org.callerx.xml PROPERTY NO_NAMESPACE TRUE)
 set_property(SOURCE ${CMAKE_SOURCE_DIR}/daemon/org.callerx.xml PROPERTY INCLUDE "dbustypes.h")
@@ -14,7 +14,9 @@ QT4_ADD_DBUS_INTERFACE(callerxlib_SRCS ${CMAKE_SOURCE_DIR}/daemon/org.callerx.xm
 
 QT4_AUTOMOC(${callerxlib_SRCS})
 
-add_library(callerxconfig SHARED ${callerxlib_SRCS})
-target_link_libraries(callerxconfig ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
+add_library(callerx SHARED ${callerxlib_SRCS})
+set_property(TARGET callerx PROPERTY VERSION 0.80)
+set_property(TARGET callerx PROPERTY SOVERSION 1)
+target_link_libraries(callerx ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
 
-install(TARGETS callerxconfig DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS callerx DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

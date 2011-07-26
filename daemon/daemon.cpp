@@ -166,5 +166,10 @@ bool CallerXDaemon::isBlocked(QString number)
     }
     return false;   
 }
+QString CallerXDaemon::Ping()
+{
+    return QString("pong");
+}
+
 
 #include "daemon.moc"

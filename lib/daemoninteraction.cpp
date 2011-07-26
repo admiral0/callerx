@@ -1,5 +1,5 @@
-/*
-    <one line to give the program's name and a brief idea of what it does.>
+ /*
+    Interaction with daemon via DBUS
     Copyright (C) 2011  Radu Andries <admiral0@tuxfamily.org>
 
     This program is free software: you can redistribute it and/or modify
@@ -19,3 +19,23 @@
 
 #include "daemoninteraction.h"
 
+DaemonInteraction::DaemonInteraction()
+{
+    callerxd=new OrgCallerxInterface("org.callerx","/org/callerx",QDBusConnection::systemBus(),this);
+}
+DaemonInteraction::~DaemonInteraction()
+{
+    delete callerxd;
+}
+bool DaemonInteraction::isAlive()
+{
+    //I am lazy
+    if( QString("pong") == callerxd->Ping())
+        return true;
+    return false;
+}
+void DaemonInteraction::ReloadAll()
+{
+    if(isAlive())
+        callerxd->Reload();
+}
