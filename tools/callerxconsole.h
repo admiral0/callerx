@@ -23,7 +23,9 @@
 #include <QtCore/QObject>
 
 #include <QtCore/QStringList>
+#include "callerx.h"
 
+class ConfigInteraction;
 
 class CallerXConsole : public QObject
 {
@@ -34,8 +36,20 @@ private:
     void displayHelp();
     void displayStatus();
     void reload();
+    void displayLists();
+    void addList(QString name);
+    void delList(QString arg1);
+    void viewParam(QString arg1);
+    void modParam(QString arg1, QString arg2); //TODO: verify type. add input for days
+    void viewListParam(QString arg1, QString arg2);
+    void modListParam(QString arg1, QString arg2, QString arg3);
+    void addNum(QString arg1, QString arg2);
+    void delNum(QString arg1, QString arg2);
+    void showList(QString arg1);
     QStringList args;
     QString command;
+    CallerX *callerx;
+    ConfigInteraction *config;
 };
 
 #endif // CALLERXCONSOLE_H

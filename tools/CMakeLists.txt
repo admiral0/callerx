@@ -1,15 +1,11 @@
 include_directories(
         ${QT_INCLUDES}
         ${CMAKE_SOURCE_DIR}/tools
-        ${CMAKE_SOURCE_DIR}/daemon
+        ${CMAKE_SOURCE_DIR}/lib
         ${CMAKE_BINARY_DIR}/tools
 )
 
-set(callerxtools_SRCS ${CMAKE_SOURCE_DIR}/daemon/dbustypes.cpp main.cpp callerxconsole.cpp )
-
-set_property(SOURCE ${CMAKE_SOURCE_DIR}/daemon/org.callerx.xml PROPERTY NO_NAMESPACE TRUE)
-set_property(SOURCE ${CMAKE_SOURCE_DIR}/daemon/org.callerx.xml PROPERTY INCLUDE "dbustypes.h")
-QT4_ADD_DBUS_INTERFACE(callerxtools_SRCS ${CMAKE_SOURCE_DIR}/daemon/org.callerx.xml callerx)
+set(callerxtools_SRCS main.cpp callerxconsole.cpp )
 
 
 QT4_AUTOMOC(${callerxtools_SRCS})

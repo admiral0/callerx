@@ -18,14 +18,16 @@
 
 
 #include "callerxconsole.h"
-#include "callerx.h"
 #include <cstdlib>
 #include <iostream>
 #include <QtCore/qcoreapplication.h>
+#include "configinteraction.h"
 
 using namespace std;
 CallerXConsole::CallerXConsole(QObject* parent): QObject(parent)
 {
+ callerx=new CallerX();
+ config=new ConfigInteraction();
  args=QCoreApplication::instance()->arguments();
  if(args.size()<2)
     displayHelp();
@@ -36,11 +38,67 @@ CallerXConsole::CallerXConsole(QObject* parent): QObject(parent)
      displayStatus();
  }else if(command=="reload"){
     reload();
+ }else if(command=="lists"){
+    displayLists();
+ }else if(command=="addList"){
+    if(args.size()<3){
+        cout<<"Error: Needs argument\n";
+        displayHelp();
+    }
+    addList(args.at(2));
+ }else if(command=="delList"){
+    if(args.size()<3){
+        cout<<"Error: Needs argument\n";
+        displayHelp();
+    }
+    delList(args.at(2));
+ }else if(command=="show"){
+    if(args.size()<3){
+        cout<<"Error: Needs argument\n";
+        displayHelp();
+    }
+    showList(args.at(2));
+ }else if(command=="global"){
+    if(args.size()<3){
+        cout<<"Error: Needs argument\n";
+        displayHelp();
+    }
+    if(args.size()==4)
+        modParam(args.at(2),args.at(3));
+    else
+        viewParam(args.at(2));
+ }else if(command=="param"){
+    if(args.size()<4){
+        cout<<"Error: Needs 2 arguments\n";
+        displayHelp();
+    }
+    if(args.size()==5)
+        modListParam(args.at(2),args.at(3),args.at(4));
+    else
+        viewListParam(args.at(2),args.at(3));
+ }else if(command=="add"){
+    if(args.size()<4){
+        cout<<"Error: Needs argument\n";
+        displayHelp();
+    }
+    int s=args.size();
+    for(int i=3;i<s;i++){
+        addNum(args.at(2),args.at(i));
+    }
+ }else if(command=="del"){
+    if(args.size()<4){
+        cout<<"Error: Needs argument\n";
+        displayHelp();
+    }
+    int s=args.size();
+    for(int i=3;i<s;i++){
+        delNum(args.at(2),args.at(i));
+    }
  }
 }
 CallerXConsole::~CallerXConsole()
 {
-    //NOP
+    //Who cares, i die anyway
 }
 void CallerXConsole::displayHelp()
 {
@@ -66,6 +124,8 @@ void CallerXConsole::displayHelp()
             cout<< "Usage: addlist listname\n";
         }else if(subcmd=="dellist"){
             cout<< "Usage: dellist listname\n";
+        }else if(subcmd=="show"){
+            cout<< "Usage: show listname\n";
         }else if(subcmd=="param"){
             cout<< "Usage: param parameter_name [newvalue]\n\n";
             cout<< " Params:\n";
@@ -76,6 +136,11 @@ void CallerXConsole::displayHelp()
             cout<< "  timeStart hh:mm\n";
             cout<< "  timeEnd hh:mm\n";
             cout<< "  days 1,5,6 # (Monday,Friday and Saturday)\n";
+            cout<< "\n";
+        }else if(subcmd=="global"){
+            cout<< "Usage: global parameter_name [newvalue]\n\n";
+            cout<< " Params:\n";
+            cout<< "  phonePrefix yes|no\n";
             cout<< "\n";
         }else if(subcmd=="add"){
             cout<<"Usage: add listname number\n";
@@ -89,9 +154,11 @@ void CallerXConsole::displayHelp()
         cout<< "  " << "status  " << " " << "Displays status of daemon" << "\n";
         cout<< "  " << "reload  " << " " << "Forces daemon to reload settings" << "\n";
         cout<< "  " << "lists   " << " " << "Displays all lists" << "\n"; 
+        cout<< "  " << "show    " << " " << "Displays list" << "\n"; 
         cout<< "  " << "addlist " << " " << "Adds a new blacklist" << "\n";
         cout<< "  " << "dellist " << " " << "Deletes blacklist" << "\n";
         cout<< "  " << "param   " << " " << "Displays/Modifies list settings" << "\n";
+        cout<< "  " << "global  " << " " << "Displays/Modifies global settings" << "\n";
         cout<< "  " << "add     " << " " << "Adds a new number to specified blacklist" << "\n"; 
         cout<< "  " << "del     " << " " << "Deletes number from specified blacklist" << "\n"; 
         cout<<"\n";
@@ -102,13 +169,64 @@ void CallerXConsole::displayHelp()
 
 void CallerXConsole::displayStatus()
 {
-    OrgCallerxInterface iface("org.callerx","/org/callerx",QDBusConnection::systemBus(),this);
-    cout<< "Nothing interesting to show yet.\n";
+    if(callerx->isAlive()){
+        cout<<"Daemon: Running";
+    }else{
+        cout<<"Daemon: Stopped";
+    }
+    cout<<"\n";
 }
 
 void CallerXConsole::reload()
 {
-    OrgCallerxInterface iface("org.callerx","/org/callerx",QDBusConnection::systemBus(),this);
-    iface.Reload();
-    cout<< "Command sent.\n";
+    callerx->reload();
 }
+void CallerXConsole::displayLists()
+{
+    QStringList l;
+    l=callerx->blockLists();
+    foreach(QString list,l){
+        cout<<list.toStdString()<<"\n";
+    }
+}
+void CallerXConsole::addList(QString name)
+{
+    callerx->addList(name);
+}
+void CallerXConsole::delList(QString arg1)
+{
+    callerx->delList(arg1);
+}
+void CallerXConsole::viewParam(QString arg1)
+{
+    cout << arg1.toStdString() << " : " << config->getGlobal(arg1).toString().toStdString() << "\n";
+}
+void CallerXConsole::modParam(QString arg1, QString arg2)
+{
+    config->setGlobal(arg1,arg2);
+}
+void CallerXConsole::viewListParam(QString arg1, QString arg2)
+{
+    cout << arg1.toStdString() << "." << arg2.toStdString() << " : " << config->getParam(arg1,arg2).toString().toStdString()<<"\n";
+}
+void CallerXConsole::modListParam(QString arg1, QString arg2, QString arg3)
+{
+    config->setParam(arg1,arg2,arg3);
+}
+void CallerXConsole::addNum(QString arg1, QString arg2)
+{
+    callerx->addNumber(arg1,arg2);
+}
+
+void CallerXConsole::delNum(QString arg1, QString arg2)
+{
+    callerx->delNumber(arg1,arg2);
+}
+void CallerXConsole::showList(QString arg1)
+{
+    QStringList l= callerx->list(arg1);
+    foreach(QString ln,l){
+        cout <<  ln.toStdString() << "\n";
+    }
+}
+

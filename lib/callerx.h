@@ -32,6 +32,7 @@ class DaemonInteraction;
  */
 class CallerX
 {
+public:
     ///List settings
     enum {
         ENABLED, /** List is enabled, bool */
