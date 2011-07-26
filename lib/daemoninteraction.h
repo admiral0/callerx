@@ -21,7 +21,7 @@
 #define DAEMONINTERACTION_H
 
 #include <QtCore/QObject>
-#include "callerx.h"
+#include "callerxinterface.h"
 
 /**
  * Class that interacts directly with daemon via dbus.
@@ -29,9 +29,10 @@
  */
 class DaemonInteraction : public QObject
 {
+
+public:
     explicit DaemonInteraction();
     virtual ~DaemonInteraction();
-public:
     /**
      * Pings server
      */

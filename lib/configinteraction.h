@@ -25,10 +25,10 @@
 class QSettings;
 
 class ConfigInteraction : public QObject
-{
+{  
+public:
     explicit ConfigInteraction();
     virtual ~ConfigInteraction();
-public:
     QStringList lists();
     void addList(QString name);
     void delList(QString list);
